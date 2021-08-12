@@ -5,7 +5,6 @@
  */
 package gameoflife;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -25,7 +24,7 @@ public class Main extends Thread {
     private static final int CELL_SIZE = 20;
     public static final int DIMENSION = 30;
     public static boolean isRunning = false;
-    private static CellProcessor simulation;
+    private static Simulation simulation;
     private static JButton startBtn, stopBtn;
     /**
      * @param args the command line arguments
@@ -45,7 +44,7 @@ public class Main extends Thread {
             @Override
             public void actionPerformed(ActionEvent e) {
                 startBtn.setEnabled(false);
-                simulation = new CellProcessor(DIMENSION * DIMENSION, 0, DIMENSION * DIMENSION);
+                simulation = new Simulation(DIMENSION);
                 simulation.start();
                 stopBtn.setEnabled(true);
             } 

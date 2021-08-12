@@ -7,7 +7,6 @@ package gameoflife;
 
 import static gameoflife.Main.frame;
 import static gameoflife.Main.isRunning;
-import static gameoflife.Main.board;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,18 +16,21 @@ import java.util.logging.Logger;
  */
 public class Simulation extends Thread {
     
-    private int[] cellsBuffer;
+    private static int[] cellsBuffer;
+    private int total;
+    private CellProcessor[] processors;
+    private static final int THREAD_COUNT = 30;
     
-    public Simulation()
+    public Simulation(int dimension)
     {
-        /*cellsBuffer = new int[board.cells.length];
-        for (int i = 0; i < cellsBuffer.length; i++)
-            cellsBuffer[i] = board.cells[i];*/
+        this.total = dimension * dimension;
+        this.processors = new CellProcessor[THREAD_COUNT];
     }
     
     @Override public void start()
     {
         isRunning = true;
+        cellsBuffer = new int[this.total];
         
         super.start();
     }
@@ -37,20 +39,41 @@ public class Simulation extends Thread {
     {
         while (isRunning)
         {
-            //
+            for (int i = 0; i < THREAD_COUNT; i++)
+                this.processors[i] = new CellProcessor(cellsBuffer, THREAD_COUNT * i, this.total / THREAD_COUNT);
             
-            frame.repaint();
+            for (CellProcessor p : this.processors)
+                p.start();
             
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            for (CellProcessor p : this.processors){
+                try {
+                    p.join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Simulation.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            Board.get.Update(this.cellsBuffer);
+            
+            frame.repaint();
         }
     }
     
     public void stopSimulation()
     {
         isRunning = false;
+        
+        try {
+            this.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CellProcessor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 }
