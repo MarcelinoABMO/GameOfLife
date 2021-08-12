@@ -16,23 +16,26 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author marce
+ * @author Marcelino Andrade
  */
 public class Board extends JPanel implements ComponentListener, MouseListener {
     
+    public static Board get;
+    
     private int cellSize = 20;
     private int width, height, count;
-    private int[] cells;
+    private static int[] cells;
     
     public Board(int width, int height, int cellSize) {
-        //super(/*new GridLayout(width, height)*/);
+        
+        get = this;
         addMouseListener(this);
         
         this.width = width; this.height = height;
         this.count = width * height;
         this.cellSize = cellSize;
         
-        setPreferredSize(new Dimension(width * cellSize, height * cellSize));
+        setSize(new Dimension(width * cellSize, height * cellSize));
         
         cells = new int[this.count];
         
@@ -91,7 +94,6 @@ public class Board extends JPanel implements ComponentListener, MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         
         int i = (int)(e.getY() / cellSize);
         int j = (int)(e.getX() / cellSize);
